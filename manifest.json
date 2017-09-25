@@ -1,15 +1,19 @@
 {
-	"manifest_version": 2,
-	"name": "SeeLater",
-	"version": "0.0.1",
-	"content_scripts": [
+  "manifest_version": 2,
+  "name": "SeeLater",
+  "version": "0.0.1",
+  "content_scripts": [
     {
-      "matches": [ "*://*/*" ],
-      "js": [ "dist/script.js" ]
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "dist/bundle.js"
+      ]
     }
   ],
   "icons": {
-    "48":"assets/eye.png"
+    "48": "assets/eye.png"
   },
   "browser_action": {
     "default_title": "SeeLater",

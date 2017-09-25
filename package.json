@@ -1,0 +1,29 @@
+{
+  "name": "see_later",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "dependencies": {
+    "typescript": "^2.5.2",
+    "webpack": "^3.6.0"
+  },
+  "devDependencies": {
+    "html-loader": "^0.5.1",
+    "ts-loader": "^2.3.7",
+    "webpack": "^3.6.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vlad160/SeeLater.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vlad160/SeeLater/issues"
+  },
+  "homepage": "https://github.com/Vlad160/SeeLater#readme"
+}
