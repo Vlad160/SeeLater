@@ -13,7 +13,7 @@
     "typeRoots": [
       "node_modules/@types"
     ],
-
+    "allowJs": true,
     "lib": [
       "es2016",
       "dom"

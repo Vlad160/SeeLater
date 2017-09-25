@@ -4,6 +4,16 @@
   "description": "",
   "main": "script.js",
   "dependencies": {
+    "@types/body-parser": "^1.16.5",
+    "@types/express": "^4.0.37",
+    "@types/node": "^8.0.30",
+    "@types/toastr": "^2.1.35",
+    "body-parser": "^1.18.2",
+    "css-loader": "^0.28.7",
+    "express": "^4.15.5",
+    "jquery": "^3.2.1",
+    "style-loader": "^0.18.2",
+    "toastr": "^2.1.2",
     "typescript": "^2.5.2",
     "webpack": "^3.6.0"
   },

@@ -1,6 +1,8 @@
-import { ModalController } from './modal/modal.controller';
 import { ServerService } from './ServerService';
 import { IPosition } from './Interfaces/IPosition';
+import * as toastr from 'toastr'
+import '../node_modules/toastr/build/toastr.css';
+import { IBookmark } from './Interfaces/IBookmark';
 
 export class SeeLater {
 
@@ -27,8 +29,12 @@ export class SeeLater {
 
     handleClick(): void {
 
-        this.seeLaterElement.appendChild(new ModalController('Added!', 5000).modal);
-        // this.serverService.postBookmark() TODO:'PostBookmark staff'
+        let href = window.location.href;
+        let bookmark = Object.assign({ url: href }, this.getCurrentPosition());
+        console.log(bookmark);
+        this.serverService.postBookmark(bookmark as IBookmark)
+            .then(() => toastr.success('Cool!'))
+            .catch(() => toastr.error('Error'));
     }
 
     getCurrentPosition(): IPosition {
@@ -39,5 +45,12 @@ export class SeeLater {
 
     }
 
+    openPreviousBookmarks(bookmarks: IBookmark[]): void {
+
+        bookmarks.forEach(bookmark => {
+            window.open(bookmark.url);
+            window.scrollTo(bookmark.position.x, bookmark.position.y);
+        })
+    }
 }
 
