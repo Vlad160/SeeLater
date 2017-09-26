@@ -19,5 +19,8 @@
     "default_title": "SeeLater",
     "default_icon": "assets/eye.png",
     "default_popup": "src/popup.html"
-  }
+  },
+  "permissions":[
+    "*://*/*"
+  ]
 }

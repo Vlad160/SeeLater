@@ -20,6 +20,7 @@
   "devDependencies": {
     "html-loader": "^0.5.1",
     "ts-loader": "^2.3.7",
+    "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.6.0"
   },
   "scripts": {
