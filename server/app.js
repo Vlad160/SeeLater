@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
+
 mongoose.connect('mongodb://localhost/admin');
 
 const mongodb = mongoose.connection;
@@ -25,6 +26,16 @@ app.post('/bookmark', (req, res) => {
         .then(() => console.log('Saved!'));
     res.status(200)
         .send();
+
+});
+
+app.get('/bookmark', (req, res) => {
+    Bookmarks.find({})
+        .then(bookmarks => {
+            console.log(bookmarks);
+            res.json(bookmarks);
+            console.log('Send!');
+        });
 
 });
 app.listen(app.get('port'), () => console.log('Site started on port ', app.get('port')));

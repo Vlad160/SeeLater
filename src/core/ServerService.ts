@@ -21,7 +21,21 @@ export class ServerService {
                 reject('Error!');
             }
         })
-        //return Promise.resolve('Done!');
     }
+
+    getBookmarks(): Promise<IBookmark[]> {
+        return new Promise<IBookmark[]>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('get', `${this.api}/bookmark`);
+            xhr.send();
+            xhr.onload = () => {
+                resolve(JSON.parse(xhr.responseText) as IBookmark[]);
+            };
+            xhr.onerror = () => {
+                reject('Error!');
+            }
+        })
+    }
+
 
 }

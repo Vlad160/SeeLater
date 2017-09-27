@@ -8,10 +8,15 @@
         "*://*/*"
       ],
       "js": [
-        "dist/bundle.js"
+        "dist/content.bundle.js"
       ]
     }
   ],
+  "background": {
+    "scripts": [
+      "dist/background.bundle.js"
+    ]
+  },
   "icons": {
     "48": "assets/eye.png"
   },
@@ -20,7 +25,8 @@
     "default_icon": "assets/eye.png",
     "default_popup": "src/popup.html"
   },
-  "permissions":[
-    "*://*/*"
+  "permissions": [
+    "http://*/",
+    "https://*/"
   ]
 }
