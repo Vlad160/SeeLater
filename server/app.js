@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
+const bookmarksController = require('./BookmarksController');
 mongoose.Promise = global.Promise;
 
 mongoose.connect('mongodb://localhost/admin');
@@ -16,21 +17,31 @@ mongodb.once('open', () => {
 app.set('port', (process.env.PORT || 3000));
 app.use(bodyParser.json());
 
-const Bookmarks = require('./models/Bookmark');
 
 app.post('/bookmark', (req, res) => {
 
-    const bookmark = new Bookmarks(req.body);
+    const bookmark = req.body;
     console.log(req.body);
-    bookmark.save()
-        .then(() => console.log('Saved!'));
-    res.status(200)
-        .send();
+    bookmarksController.postBookmark(bookmark)
+        .then(() => {
+            console.log('Saved!');
+            res.status(200).send();
+        })
+        .catch(error => res.status(500).send())
 
 });
 
 app.get('/bookmark', (req, res) => {
-    Bookmarks.find({})
+
+    let bookmarksRequest;
+    console.log(req.query);
+    if (req.query['url']) {
+        bookmarksRequest = bookmarksController.getBookmark(req.query['url']);
+    }
+    else {
+        bookmarksRequest = bookmarksController.getAllBookmarks();
+    }
+    bookmarksRequest
         .then(bookmarks => {
             console.log(bookmarks);
             res.json(bookmarks);
@@ -38,4 +49,5 @@ app.get('/bookmark', (req, res) => {
         });
 
 });
+
 app.listen(app.get('port'), () => console.log('Site started on port ', app.get('port')));

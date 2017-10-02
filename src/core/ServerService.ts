@@ -23,10 +23,15 @@ export class ServerService {
         })
     }
 
-    getBookmarks(): Promise<IBookmark[]> {
+    getBookmarks(bookmarkUrl?: string): Promise<IBookmark[]> {
         return new Promise<IBookmark[]>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open('get', `${this.api}/bookmark`);
+            let url = `${this.api}/bookmark`;
+            if (bookmarkUrl) {
+                url += `/?url=${bookmarkUrl}`;
+
+            }
+            xhr.open('get', `${url}`);
             xhr.send();
             xhr.onload = () => {
                 resolve(JSON.parse(xhr.responseText) as IBookmark[]);

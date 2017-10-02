@@ -2,6 +2,7 @@ import { ServerService } from '../core/ServerService';
 import { IPosition } from '../core/Interfaces/IPosition';
 import * as toastr from 'toastr'
 import { IBookmark } from '../core/Interfaces/IBookmark';
+import { serverService } from './script';
 
 export class SeeLater {
 
@@ -13,6 +14,7 @@ export class SeeLater {
         this.seeLaterElement = this.constructElement();
         this.serverService = serverService;
         this.seeLaterElement.addEventListener('click', this.handleClick.bind(this));
+        this.getAndScrollIfExist();
     }
 
     constructElement() {
@@ -32,9 +34,12 @@ export class SeeLater {
         let href = window.location.href;
         let bookmark = Object.assign({ url: href }, this.getCurrentPosition());
         console.log(bookmark);
-        this.serverService.postBookmark(bookmark as IBookmark)
-            .then(() => toastr.success('Cool!'))
-            .catch(() => toastr.error('Error'));
+        chrome.runtime.sendMessage(bookmark, response => {
+            console.log(response);
+            // .then(() => toastr.success('Cool!'))
+            // .catch(() => toastr.error('Error'));
+        })
+
     }
 
     getCurrentPosition(): IPosition {
@@ -45,11 +50,16 @@ export class SeeLater {
 
     }
 
-    openPreviousBookmarks(bookmarks: IBookmark[]): void {
-        bookmarks.forEach(bookmark => {
-            window.open(bookmark.url);
-            window.scrollTo(bookmark.position.x, bookmark.position.y);
-        })
+    scrollToPosition(bookmark: IBookmark): void {
+        window.scrollTo(bookmark.position.x, bookmark.position.y)
+    }
+
+    getAndScrollIfExist(): void {
+        serverService.getBookmarks(window.location.href)
+            .then(response => {
+                if (Object.keys(response)) {
+                    this.scrollToPosition(response[0] as IBookmark)
+                }
+            })
     }
 }
-

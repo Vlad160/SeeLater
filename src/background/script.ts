@@ -1,15 +1,6 @@
-import { serverService } from '../content/script';
-import { sl } from '../content/script';
-import { IBookmark } from '../core/Interfaces/IBookmark';
+import { BackgroundObserver } from './BackgroundObserver';
+import { seeLater, serverService } from '../content/script';
 
 
-serverService.getBookmarks()
-    .then(response => sl.openPreviousBookmarks(response));
+let backgroundObserver = new BackgroundObserver(seeLater, serverService);
 
-let bookmark = {
-    url: 'http://www.google.com',
-    x: 0,
-    y: 0,
-};
-
-serverService.postBookmark(bookmark as IBookmark);
