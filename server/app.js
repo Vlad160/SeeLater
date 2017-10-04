@@ -36,7 +36,7 @@ app.get('/bookmark', (req, res) => {
     let bookmarksRequest;
     console.log(req.query);
     if (req.query['url']) {
-        bookmarksRequest = bookmarksController.getBookmark(req.query['url']);
+        bookmarksRequest = bookmarksController.getBookmark(req.query['url']);   //TODO: FIX THIS CODE
     }
     else {
         bookmarksRequest = bookmarksController.getAllBookmarks();

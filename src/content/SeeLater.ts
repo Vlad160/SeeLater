@@ -1,18 +1,14 @@
-import { ServerService } from '../core/ServerService';
 import { IPosition } from '../core/Interfaces/IPosition';
 import * as toastr from 'toastr'
 import { IBookmark } from '../core/Interfaces/IBookmark';
-import { serverService } from './script';
 
 export class SeeLater {
 
     seeLaterElement: HTMLElement;
-    serverService: ServerService;
 
-    constructor(serverService: ServerService) {
+    constructor() {
 
         this.seeLaterElement = this.constructElement();
-        this.serverService = serverService;
         this.seeLaterElement.addEventListener('click', this.handleClick.bind(this));
         this.getAndScrollIfExist();
     }
@@ -30,15 +26,10 @@ export class SeeLater {
     }
 
     handleClick(): void {
-
-        let href = window.location.href;
-        let bookmark = Object.assign({ url: href }, this.getCurrentPosition());
-        console.log(bookmark);
-        chrome.runtime.sendMessage(bookmark, response => {
-            console.log(response);
-            // .then(() => toastr.success('Cool!'))
-            // .catch(() => toastr.error('Error'));
-        })
+        let bookmark = {};
+        bookmark['url'] = window.location.href;
+        bookmark['position'] = this.getCurrentPosition();
+        this.postBookmark(bookmark as IBookmark);
 
     }
 
@@ -55,11 +46,28 @@ export class SeeLater {
     }
 
     getAndScrollIfExist(): void {
-        serverService.getBookmarks(window.location.href)
-            .then(response => {
-                if (Object.keys(response)) {
-                    this.scrollToPosition(response[0] as IBookmark)
+        chrome.runtime.sendMessage({ type: 'info' },
+            response => {
+                if (response.data) {
+                    this.scrollToPosition(response.data as IBookmark);
                 }
-            })
+            }
+        )
+
+    }
+
+    postBookmark(bookmark: IBookmark): void {
+        console.log(bookmark);
+        let request = {};
+        request['type'] = 'post';
+        request['data'] = bookmark;
+        chrome.runtime.sendMessage(request, response => {
+            if (response.type == 'Success') {
+                toastr.success('Success!');
+            }
+            else {
+                toastr.error('Error');
+            }
+        })
     }
 }

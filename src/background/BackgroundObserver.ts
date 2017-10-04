@@ -1,47 +1,61 @@
-import { SeeLater } from '../content/SeeLater';
 import { ServerService } from '../core/ServerService';
-import { serverService } from '../content/script';
 import { IBookmark } from '../core/Interfaces/IBookmark';
 
 export class BackgroundObserver {
 
-    private seeLater: SeeLater;
     private serverService: ServerService;
+    private bookmarksMap: Map<number, IBookmark>;
+    private eventType = {
+        info: this.sendBookmarkInfo,
+        post: this.postBookmark,
+    };
 
-    constructor(seeLater: SeeLater, serverService: ServerService) {
+    constructor(serverService: ServerService) {
 
-        this.seeLater = seeLater;
         this.serverService = serverService;
-        this.init();
-
+        this.bookmarksMap = new Map<number, IBookmark>();
+        this.getPreviousBookmarks()
+            .then(bookmarks => {
+                this.openBookmarks(bookmarks)
+            });
+        this.initSubscriber();
     }
 
-    init(): void {
-        this.openPreviousBookmarks();
+    initSubscriber(): void {
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
                 if (request) {
-                    serverService.postBookmark(request as IBookmark)
-                        .then(response => {
-                            sendResponse({ response });
-                        })
-                        .catch(error => sendResponse(error));
+                    request.data = request.data || sender.tab.id;
+                    this.eventType[request.type].apply(this, [request.data, sendResponse]);
+                    return true;
                 }
-                return true;
             });
     }
 
-    openPreviousBookmarks(): void {
-        serverService.getBookmarks()
-            .then(bookmarks => {
-                this.openBookmarks(bookmarks as IBookmark[]);
+    sendBookmarkInfo(tabId: number, sendResponse): void {
+        let response = {};
+        response['data'] = this.bookmarksMap.get(tabId);
+        sendResponse(response);
+    }
+
+    postBookmark(bookmark: IBookmark, sendResponse): void {
+        this.serverService.postBookmark(bookmark)
+            .then(response => {
+                sendResponse({ type: 'Success' });
             })
+            .catch(error => sendResponse({ type: 'Error' }));
+    }
+
+    getPreviousBookmarks(): Promise<IBookmark[]> {
+        return this.serverService.getBookmarks()
     }
 
     openBookmarks(bookmarks: IBookmark[]): void {
         bookmarks.forEach(bookmark => {
+            console.log(`${bookmark.url}`);
             chrome.tabs.create({ url: bookmark.url, active: false }, (tab => {
-                console.log(tab);
+                this.bookmarksMap.set(tab.id, bookmark);
+                console.log(`${tab.id} - ${bookmark.url}`);
             }))
         })
     }

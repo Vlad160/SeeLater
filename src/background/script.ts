@@ -1,6 +1,5 @@
 import { BackgroundObserver } from './BackgroundObserver';
-import { seeLater, serverService } from '../content/script';
+import { ServerService } from '../core/ServerService';
 
-
-let backgroundObserver = new BackgroundObserver(seeLater, serverService);
-
+let serverService = new ServerService();
+let backgroundObserver = new BackgroundObserver(serverService);

@@ -2,7 +2,7 @@ import { IBookmark } from './Interfaces/IBookmark';
 
 export class ServerService {
 
-    private api: string = 'http://localhost:3000';
+    private _api: string = 'http://localhost:3000';
 
     constructor() {
 
@@ -11,7 +11,7 @@ export class ServerService {
     postBookmark(bookmark: IBookmark): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open('post', `${this.api}/bookmark`);
+            xhr.open('post', `${this._api}/bookmark`);
             xhr.setRequestHeader('Content-type', 'application/json');
             xhr.send(JSON.stringify(bookmark));
             xhr.onload = () => {
@@ -26,7 +26,7 @@ export class ServerService {
     getBookmarks(bookmarkUrl?: string): Promise<IBookmark[]> {
         return new Promise<IBookmark[]>((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            let url = `${this.api}/bookmark`;
+            let url = `${this._api}/bookmark`;
             if (bookmarkUrl) {
                 url += `/?url=${bookmarkUrl}`;
 
