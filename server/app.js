@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
-const bookmarksController = require('./BookmarksController');
+const bookmarksController = require('./bookmarks.controller');
 mongoose.Promise = global.Promise;
 
 mongoose.connect('mongodb://localhost/admin');

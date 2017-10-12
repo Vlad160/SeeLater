@@ -20,10 +20,6 @@ module.exports = {
             {
                 test: /\.css$/,
                 loader: 'style-loader'
-            },
-            {
-                test: /\.css$/,
-                loader: 'css-loader'
             }
         ]
     },

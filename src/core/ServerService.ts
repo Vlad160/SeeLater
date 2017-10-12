@@ -1,4 +1,5 @@
 import { IBookmark } from './Interfaces/IBookmark';
+import FetchProperties = chrome.extension.FetchProperties;
 
 export class ServerService {
 
@@ -42,5 +43,15 @@ export class ServerService {
         })
     }
 
+    deleteBookmark(_id: string): Promise<any> {
 
+        const reqOptions: any = {
+            method: 'delete',
+            mode: 'cors',
+            cache: 'default',
+            qs: { _id },
+
+        };
+        return fetch(`${this._api}/bookmark`, reqOptions)
+    }
 }

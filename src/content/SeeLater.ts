@@ -1,16 +1,25 @@
 import { IPosition } from '../core/Interfaces/IPosition';
 import * as toastr from 'toastr'
 import { IBookmark } from '../core/Interfaces/IBookmark';
+import { error } from 'util';
 
 export class SeeLater {
 
     seeLaterElement: HTMLElement;
+    publisher: any;
+    bookmark: IBookmark;
 
     constructor() {
 
         this.seeLaterElement = this.constructElement();
         this.seeLaterElement.addEventListener('click', this.handleClick.bind(this));
-        this.getAndScrollIfExist();
+        this.publisher = chrome.runtime.sendMessage;
+        this.getIfExist()
+            .then(response => {
+                if (response) this.scrollToPosition(response);
+            })
+            .then(() => this.deleteBookmark(this.bookmark))
+            .catch(error => console.log(error))
     }
 
     constructElement() {
@@ -30,7 +39,6 @@ export class SeeLater {
         bookmark['url'] = window.location.href;
         bookmark['position'] = this.getCurrentPosition();
         this.postBookmark(bookmark as IBookmark);
-
     }
 
     getCurrentPosition(): IPosition {
@@ -45,15 +53,15 @@ export class SeeLater {
         window.scrollTo(bookmark.position.x, bookmark.position.y)
     }
 
-    getAndScrollIfExist(): void {
-        chrome.runtime.sendMessage({ type: 'info' },
+    getIfExist(): Promise<any> {
+        return new Promise((resolve, reject) => this.publisher({ type: 'info' },
             response => {
                 if (response.data) {
-                    this.scrollToPosition(response.data as IBookmark);
+                    this.bookmark = response;
                 }
+                resolve(response.data);
             }
-        )
-
+        ))
     }
 
     postBookmark(bookmark: IBookmark): void {
@@ -61,13 +69,35 @@ export class SeeLater {
         let request = {};
         request['type'] = 'post';
         request['data'] = bookmark;
-        chrome.runtime.sendMessage(request, response => {
-            if (response.type == 'Success') {
-                toastr.success('Success!');
-            }
-            else {
-                toastr.error('Error');
-            }
+        this.publisher(request, response =>
+            this.showReqRsult(response)
+        )
+    }
+
+    deleteBookmark(bookmark: IBookmark) {
+        let pubOptions = {
+            type: 'delete',
+            data: bookmark
+        };
+        this.publisher(pubOptions, response => {
+
         })
+    }
+
+    showReqRsult(response): void {
+        if (response.type == 'Success') {
+            this.showSuccess()
+        }
+        else {
+            this.showError();
+        }
+    }
+
+    showSuccess(): void {
+        toastr.success('Success!');
+    }
+
+    showError(): void {
+        toastr.error('Error');
     }
 }

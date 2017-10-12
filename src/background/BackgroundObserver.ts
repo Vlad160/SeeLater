@@ -6,15 +6,16 @@ export class BackgroundObserver {
     private serverService: ServerService;
     private bookmarksMap: Map<number, IBookmark>;
     private eventType = {
-        info: this.sendBookmarkInfo,
+        info: this.getBookmarkInfo,
         post: this.postBookmark,
+        delete: this.deleteBookmark,
     };
 
     constructor(serverService: ServerService) {
 
         this.serverService = serverService;
         this.bookmarksMap = new Map<number, IBookmark>();
-        this.getPreviousBookmarks()
+        this.getBookmarks()
             .then(bookmarks => {
                 this.openBookmarks(bookmarks)
             });
@@ -32,7 +33,7 @@ export class BackgroundObserver {
             });
     }
 
-    sendBookmarkInfo(tabId: number, sendResponse): void {
+    getBookmarkInfo(tabId: number, sendResponse): void {
         let response = {};
         response['data'] = this.bookmarksMap.get(tabId);
         sendResponse(response);
@@ -46,7 +47,7 @@ export class BackgroundObserver {
             .catch(error => sendResponse({ type: 'Error' }));
     }
 
-    getPreviousBookmarks(): Promise<IBookmark[]> {
+    getBookmarks(): Promise<IBookmark[]> {
         return this.serverService.getBookmarks()
     }
 
@@ -57,6 +58,13 @@ export class BackgroundObserver {
                 this.bookmarksMap.set(tab.id, bookmark);
                 console.log(`${tab.id} - ${bookmark.url}`);
             }))
-        })
+        });
+    }
+
+    deleteBookmark(bookmark: IBookmark): Promise<any> {
+
+        return this.serverService.deleteBookmark(bookmark._id)
+            .then(() => this.bookmarksMap.delete(Number(bookmark._id)))
+
     }
 }
