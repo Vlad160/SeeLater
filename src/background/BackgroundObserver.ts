@@ -8,8 +8,8 @@ export class BackgroundObserver {
     private eventType = {
         info: this.getBookmarkInfo,
         post: this.postBookmark,
-        delete: this.deleteBookmark,
     };
+    private tabsObserver;
 
     constructor(serverService: ServerService) {
 
@@ -20,12 +20,16 @@ export class BackgroundObserver {
                 this.openBookmarks(bookmarks)
             });
         this.initSubscriber();
+        this.tabsObserver = chrome.tabs.onActivated.addListener((activeInfo => {
+            this.deleteBookmark(activeInfo.tabId);
+        }))
     }
 
     initSubscriber(): void {
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
                 if (request) {
+                    console.log(request);
                     request.data = request.data || sender.tab.id;
                     this.eventType[request.type].apply(this, [request.data, sendResponse]);
                     return true;
@@ -61,10 +65,11 @@ export class BackgroundObserver {
         });
     }
 
-    deleteBookmark(bookmark: IBookmark): Promise<any> {
-
-        return this.serverService.deleteBookmark(bookmark._id)
-            .then(() => this.bookmarksMap.delete(Number(bookmark._id)))
-
+    deleteBookmark(tabId): void {
+        const bookmark = this.bookmarksMap.get(tabId);
+        if (bookmark) {
+            this.serverService.deleteBookmark(bookmark._id)
+                .then(() => this.bookmarksMap.delete(Number(bookmark._id)));
+        }
     }
 }

@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
-const bookmarksController = require('./bookmarks.controller');
+const bookmarksController = require('./Bookmarks/bookmarks.controller');
 mongoose.Promise = global.Promise;
 
 mongoose.connect('mongodb://localhost/admin');
@@ -33,20 +33,22 @@ app.post('/bookmark', (req, res) => {
 
 app.get('/bookmark', (req, res) => {
 
-    let bookmarksRequest;
     console.log(req.query);
-    if (req.query['url']) {
-        bookmarksRequest = bookmarksController.getBookmark(req.query['url']);   //TODO: FIX THIS CODE
-    }
-    else {
-        bookmarksRequest = bookmarksController.getAllBookmarks();
-    }
-    bookmarksRequest
+    const query = req.query;
+    bookmarksController.getBookmark(query)
         .then(bookmarks => {
             console.log(bookmarks);
             res.json(bookmarks);
             console.log('Send!');
         });
+});
+
+app.delete('/bookmark', (req, res) => {
+
+    console.log(req.query);
+    const query = req.query;
+    bookmarksController.deleteBookmark(query)
+        .then(() => res.status(200).send())
 
 });
 

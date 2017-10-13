@@ -1,7 +1,6 @@
 import { IPosition } from '../core/Interfaces/IPosition';
 import * as toastr from 'toastr'
 import { IBookmark } from '../core/Interfaces/IBookmark';
-import { error } from 'util';
 
 export class SeeLater {
 
@@ -10,7 +9,6 @@ export class SeeLater {
     bookmark: IBookmark;
 
     constructor() {
-
         this.seeLaterElement = this.constructElement();
         this.seeLaterElement.addEventListener('click', this.handleClick.bind(this));
         this.publisher = chrome.runtime.sendMessage;
@@ -18,7 +16,6 @@ export class SeeLater {
             .then(response => {
                 if (response) this.scrollToPosition(response);
             })
-            .then(() => this.deleteBookmark(this.bookmark))
             .catch(error => console.log(error))
     }
 
@@ -57,7 +54,7 @@ export class SeeLater {
         return new Promise((resolve, reject) => this.publisher({ type: 'info' },
             response => {
                 if (response.data) {
-                    this.bookmark = response;
+                    this.bookmark = response.data;
                 }
                 resolve(response.data);
             }
@@ -65,26 +62,15 @@ export class SeeLater {
     }
 
     postBookmark(bookmark: IBookmark): void {
-        console.log(bookmark);
         let request = {};
         request['type'] = 'post';
         request['data'] = bookmark;
         this.publisher(request, response =>
-            this.showReqRsult(response)
+            this.showReqResult(response)
         )
     }
 
-    deleteBookmark(bookmark: IBookmark) {
-        let pubOptions = {
-            type: 'delete',
-            data: bookmark
-        };
-        this.publisher(pubOptions, response => {
-
-        })
-    }
-
-    showReqRsult(response): void {
+    showReqResult(response): void {
         if (response.type == 'Success') {
             this.showSuccess()
         }
